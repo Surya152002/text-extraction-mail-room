@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extract Text From Image</title>
+</head>
+<body>
+    <form action="/extracttextfromimage" method="post" enctype="multipart/form-data">
+        <label for="file">Upload Image File:</label>
+        <input type="file" name="file" accept="image/*" >
+        <button>Extract Text From Image</button><br>
+        
+    </form>
+ 
+    <select id='wordSelector'>
+        <option>- Select word -</option>
+        <option>BILL NO</option>
+        <option>Invoice No</option>
+        <option>Data</option>
+        <option>hi</option>
+        <option>bye</option>
+      </select><br/>
+      <textarea id='tarea' cols='50' rows='40'><%=data%></textarea><br><br>
+      <label for="file">Upload CSV File:</label>
+      <input type="file" id="fileUpload" >
+      <input type="text" id="texts">
+      <button id="button">Compare</button>
+    
+    <script>
+        function selectTextareaWord(tarea, word) {
+    const words = tarea.value.split(" ");
+
+    // calculate start/end
+    const startPos = tarea.value.indexOf(word),
+      endPos = startPos + word.length+9
+
+    if (typeof(tarea.selectionStart) != "undefined") {
+      tarea.focus();
+      tarea.selectionStart = startPos;
+      tarea.selectionEnd = endPos;
+      return true;
+    }
+
+    // IE
+    if (document.selection && document.selection.createRange) {
+      tarea.focus();
+      tarea.select();
+      var range = document.selection.createRange();
+      range.collapse(true);
+      range.moveEnd("character", endPos);
+      range.moveStart("character", startPos);
+      range.select();
+      return true;
+    }
+
+    return false;
+  }
+
+  /// debugging code
+  var sel = document.getElementById('wordSelector');
+  var tarea = document.getElementById('tarea');
+  sel.onchange = function() {
+    selectTextareaWord(tarea, this.value);
+  }
+
+
+
+
+
+
+  function Search() {
+  var fileUpload = document.getElementById("fileUpload");
+  var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.csv|.txt)$/;
+  if (regex.test(fileUpload.value.toLowerCase())) {
+      if (typeof (FileReader) != "undefined") {
+          var reader = new FileReader();
+          reader.onload = function (e) {
+            var table = document.createElement("table");
+  var rows = e.target.result.split("\n");
+  for(var i = 0; i < rows.length; i++)
+  {   
+      var row = table.insertRow(-1); 
+      var cells = rows[i].split(",");
+      for(var j = 0; j < cells.length; j++)
+      {
+          var cell = row.insertCell(-1); 
+        //  cell.innerHTML = cells[j];
+
+
+      // Here repeated checkboxes:
+      var radio = document.createElement('input');
+      radio.type = 'checkbox';
+      radio.name = 'check';
+
+  } 
+
+  var ser=document.getElementById("texts");
+      if(cells[i].indexOf(ser))
+      {
+      alert("matches");
+        cell.innerHTML = cells[i];
+      }
+      else
+      {
+      alert("unmatches");
+      }
+
+      var cell = row.insertCell(-1);
+      cell.appendChild(radio);
+      //cell.appendChild(button);
+  }
+  var button = document.createElement('button');
+      button.textContent = 'Send';
+  cell.appendChild(button);
+  button.onclick = function(){ alert();};
+
+  var dvCSV = document.getElementById("dvCSV");
+  dvCSV.innerHTML = "";
+  dvCSV.appendChild(table);
+          }
+
+          reader.readAsText(fileUpload.files[0]);
+
+      } 
+    }
+  }
+    </script>
+</body>
+</html>
